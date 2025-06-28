@@ -130,19 +130,25 @@ async def async_setup_platform(
 ) -> None:
     """Set up the Neviweb130 valve."""
     data = hass.data[DOMAIN]
-
+    usernames = discovery_info.get("usernames", []) if discovery_info else []
+    if not usernames:
+        _LOGGER.error("No usernames provided in discovery_info.")
+        return
     entities = []
-    for device_info in data.neviweb130_client.gateway_data:
-        if (
-            "signature" in device_info
-            and "model" in device_info["signature"]
-            and device_info["signature"]["model"] in IMPLEMENTED_DEVICE_MODEL
-        ):
-            device_name = "{} {}".format(DEFAULT_NAME, device_info["name"])
-            device_sku = device_info["sku"]
-            device_firmware = "{}.{}.{}".format(
-                device_info["signature"]["softVersion"]["major"],
-                device_info["signature"]["softVersion"]["middle"],
+    for username in usernames:
+        neviweb_data = data[username]
+        client = neviweb_data.get_client()
+        for device_info in client.gateway_data:
+            if (
+                "signature" in device_info
+                and "model" in device_info["signature"]
+                and device_info["signature"]["model"] in IMPLEMENTED_DEVICE_MODEL
+            ):
+                device_name = "{} {}".format(DEFAULT_NAME, device_info["name"])
+                device_sku = device_info["sku"]
+                device_firmware = "{}.{}.{}".format(
+                    device_info["signature"]["softVersion"]["major"],
+                    device_info["signature"]["softVersion"]["middle"],
                 device_info["signature"]["softVersion"]["minor"],
             )
             if device_info["signature"]["model"] in IMPLEMENTED_ZB_VALVE_MODEL:

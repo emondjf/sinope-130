@@ -71,10 +71,25 @@ NEVIWEB_LOCATION = f"{HOST}/api/location/"
 
 
 def setup(hass, hass_config):
-    """Set up neviweb130."""
-    data = Neviweb130Data(hass, hass_config[DOMAIN])
-    hass.data[DOMAIN] = data
+    """Set up neviweb130 for multiple accounts."""
+    hass.data[DOMAIN] = {}
+    accounts = hass_config[DOMAIN].get("accounts", [])
+    if not accounts:
+        _LOGGER.error("No accounts configured for neviweb130. Please add at least one account under 'accounts'.")
+        return False
 
+    # Store a list of usernames for reference
+    hass.data[DOMAIN]["_usernames"] = []
+    for account in accounts:
+        username = account.get(CONF_USERNAME)
+        if not username:
+            _LOGGER.error("Account entry missing username. Skipping.")
+            continue
+        data = Neviweb130Data(hass, account)
+        hass.data[DOMAIN][username] = data
+        hass.data[DOMAIN]["_usernames"].append(username)
+
+    # Global config (use first account's config or top-level config for intervals, etc.)
     global SCAN_INTERVAL
     SCAN_INTERVAL = hass_config[DOMAIN].get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
     _LOGGER.debug("Setting scan interval to: %s", SCAN_INTERVAL)
@@ -95,30 +110,35 @@ def setup(hass, hass_config):
     NOTIFY = hass_config[DOMAIN].get(CONF_NOTIFY, DEFAULT_NOTIFY)
     _LOGGER.debug("Setting notification method to: %s", NOTIFY)
 
-    discovery.load_platform(hass, "climate", DOMAIN, {}, hass_config)
-    discovery.load_platform(hass, "light", DOMAIN, {}, hass_config)
-    discovery.load_platform(hass, "switch", DOMAIN, {}, hass_config)
-    discovery.load_platform(hass, "sensor", DOMAIN, {}, hass_config)
-    discovery.load_platform(hass, "valve", DOMAIN, {}, hass_config)
+    # Pass all accounts to each platform for discovery
+    discovery_info = {"usernames": hass.data[DOMAIN]["_usernames"]}
+    discovery.load_platform(hass, "climate", DOMAIN, discovery_info, hass_config)
+    discovery.load_platform(hass, "light", DOMAIN, discovery_info, hass_config)
+    discovery.load_platform(hass, "switch", DOMAIN, discovery_info, hass_config)
+    discovery.load_platform(hass, "sensor", DOMAIN, discovery_info, hass_config)
+    discovery.load_platform(hass, "valve", DOMAIN, discovery_info, hass_config)
 
     return True
 
 
 class Neviweb130Data:
-    """Get the latest data and update the states."""
+    """Get the latest data and update the states for a single account."""
 
     def __init__(self, hass, config):
-        """Init the neviweb130 data object."""
-        # from pyneviweb130 import Neviweb130Client
+        """Init the neviweb130 data object for one account."""
         username = config.get(CONF_USERNAME)
         password = config.get(CONF_PASSWORD)
         network = config.get(CONF_NETWORK)
         network2 = config.get(CONF_NETWORK2)
         network3 = config.get(CONF_NETWORK3)
         ignore_miwi = config.get(CONF_IGNORE_MIWI)
+        self.username = username
         self.neviweb130_client = Neviweb130Client(
             hass, username, password, network, network2, network3, ignore_miwi
         )
+
+    def get_client(self):
+        return self.neviweb130_client
 
 
 # According to HA:
