@@ -1,12 +1,12 @@
 {
-  "domain": "neviweb130",
-  "name": "Sinope Neviweb130",
-  "codeowners": ["@claudegel"],
-  "documentation": "https://github.com/claudegel/sinope-130",
-  "issue_tracker": "https://github.com/claudegel/sinope-130/issues",
+  "domain": "neviweb130JF",
+  "name": "Sinope Neviweb130 JF",
+  "codeowners": ["@emondjf"],
+  "documentation": "https://github.com/emondjf/sinope-130",
+  "issue_tracker": "https://github.com/emondjf/sinope-130/issues",
   "dependencies": [],
   "requirements": [],
   "iot_class": "cloud_polling",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "homeassistant": "2025.1.1"
 }
