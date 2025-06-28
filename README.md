@@ -143,20 +143,29 @@ There are two methods to install this custom component:
 To enable Neviweb130 management in your installation, add the following to your `configuration.yaml` file, then restart Home Assistant.
 
 ```yaml
-# Example configuration.yaml entry
+# Example configuration.yaml entry (multi-account)
 neviweb130:
-  username: 'your Neviweb username'
-  password: 'your Neviweb password'
-  network: 'your gt130 location name in Neviweb' (gt130 emplacement dans Neviweb)
-  network2: 'your second location name in Neviweb' (2e emplacement)
-  network3: 'your third location name in Neviweb' (3e emplacement)
+  accounts:
+    - username: 'your Neviweb username 1'
+      password: 'your Neviweb password 1'
+      network: 'your gt130 location name in Neviweb' # (gt130 emplacement dans Neviweb)
+      network2: 'your second location name in Neviweb' # (2e emplacement, optional)
+      network3: 'your third location name in Neviweb' # (3e emplacement, optional)
+    - username: 'your Neviweb username 2'
+      password: 'your Neviweb password 2'
+      network: 'your gt130 location name in Neviweb for 2nd account'
+      # ... add more accounts as needed ...
   scan_interval: 360
   homekit_mode: False
   ignore_miwi: False
   stat_interval: 1800
   notify: "both"
 ```
-Networks names are the names found on top of first page after loging into Neviweb. If you have more then one network, just click on icon on top to find all networks names. Select the one used for GT130 or wifi devices. Both device type must be on same network to work in neviweb130. If you have two networks for two GT130 or two wifi groups then you can add network2 parameter in your configuration.yaml. See below. You can't mix miwi devices and zigbee/wifi devices on the same network. For miwi devices install [Neviweb](https://github.com/claudegel/sinope-1) custom_component which can run along with this custom_component in HA.
+
+**Multi-account support:**
+You can now configure multiple Neviweb accounts under the `accounts:` list. Each account can have its own username, password, and network(s). Devices from all configured accounts will be discovered and managed in Home Assistant.
+
+Networks names are the names found on top of first page after loging into Neviweb. If you have more than one network, just click on the icon on top to find all network names. Select the one used for GT130 or wifi devices. Both device types must be on the same network to work in neviweb130. If you have two networks for two GT130 or two wifi groups then you can add the network2 parameter in your configuration.yaml. See below. You can't mix miwi devices and zigbee/wifi devices on the same network. For miwi devices install [Neviweb](https://github.com/claudegel/sinope-1) custom_component which can run along with this custom_component in HA.
 
 ![network](www/network.jpg)
 
@@ -164,16 +173,22 @@ Networks names are the names found on top of first page after loging into Neviwe
 
 | key | required | default | description
 | --- | --- | --- | ---
-| **username** | yes |  | Your email address used to log in Neviweb.
-| **password** | yes |  | Your Neviweb password.
-| **network** | no | if not specified, 1st location found is used. Write the name of the GT130 location in Neviweb you want to control.| Network name is the location name in Neviweb written on top center of first page, where your wifi or zigbee devices are registered.
-| **network2** | no | 2nd location found | The name of the second location you want to control (zigbee and/or wifi only). Don't add it if you have only one network.
-| **network3** | no | 3rd location found | The name of the third location you want to control (zigbee and/or wifi only). Don't add it if you have only one network.
+| **accounts** | yes |  | List of Neviweb accounts (see example above). Each account must have its own username and password.
 | **scan_interval** | no | 540 | The number of seconds between each access to Neviweb to update device state. Sinopé asked for a minimum of 5 minutes between polling now so you can reduce scan_interval to 300. Don't go over 600, the session will expire.
 | **homekit_mode** | no | False | Add support for Homekit specific values. Not needed if you don't use homekit.
-| **ignore_miwi** | no | False | Ignore miwi devices if present in same location then zigbee and/or wifi devices. Warm if we set wrong Neviweb location.
+| **ignore_miwi** | no | False | Ignore miwi devices if present in same location then zigbee and/or wifi devices. Warn if we set wrong Neviweb location.
 | **stat_interval** | no | 1800 | The number of seconds between each access to Neviweb for energy statistic update. Scan will start after 5 minutes from HA startup and will be updated at every 300 to 1800 seconds.
-| **notify** | no | both | The method to send notification in case of device error. value option are nothing, logging, notification, both.
+| **notify** | no | both | The method to send notification in case of device error. value options are nothing, logging, notification, both.
+
+**Each account** in the `accounts:` list supports the following keys:
+
+| key | required | default | description
+| --- | --- | --- | ---
+| **username** | yes |  | Your email address used to log in Neviweb.
+| **password** | yes |  | Your Neviweb password.
+| **network** | no | if not specified, 1st location found is used. Write the name of the GT130 location in Neviweb you want to control.|
+| **network2** | no | 2nd location found | The name of the second location you want to control (zigbee and/or wifi only). Don't add it if you have only one network.
+| **network3** | no | 3rd location found | The name of the third location you want to control (zigbee and/or wifi only). Don't add it if you have only one network.
 
 If you have a GT125 also connected to Neviweb the network parameter is mandatory or it is possible that during the setup, the GT125 network will be picked up accidentally. If you have only two GT130/wifi network, you can omit there names as during setup, the first two network found will be picked up automatically. If you prefer to add networs names make sure that they are written «exactly» as in Neviweb. (first letter capitalized or not). Avoid also accented letters as Home Assistant will remove them and location name won't match preventing custom_component loading.
 
