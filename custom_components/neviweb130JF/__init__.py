@@ -75,7 +75,7 @@ def setup(hass, hass_config):
     hass.data[DOMAIN] = {}
     accounts = hass_config[DOMAIN].get("accounts", [])
     if not accounts:
-        _LOGGER.error("No accounts configured for neviweb130. Please add at least one account under 'accounts'.")
+        _LOGGER.error("No accounts configured for neviweb130JF. Please add at least one account under 'accounts'.")
         return False
 
     # Store a list of usernames for reference

@@ -151,11 +151,20 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required(CONF_USERNAME): cv.string,
-                vol.Required(CONF_PASSWORD): cv.string,
-                vol.Optional(CONF_NETWORK): cv.string,
-                vol.Optional(CONF_NETWORK2): cv.string,
-                vol.Optional(CONF_NETWORK3): cv.string,
+                vol.Required("accounts"): vol.All(
+                    cv.ensure_list,
+                    [
+                        vol.Schema(
+                            {
+                                vol.Required(CONF_USERNAME): cv.string,
+                                vol.Required(CONF_PASSWORD): cv.string,
+                                vol.Optional(CONF_NETWORK): cv.string,
+                                vol.Optional(CONF_NETWORK2): cv.string,
+                                vol.Optional(CONF_NETWORK3): cv.string,
+                            }
+                        )
+                    ],
+                ),
                 vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL): cv.time_period,
                 vol.Optional(CONF_HOMEKIT_MODE, default=HOMEKIT_MODE): cv.boolean,
                 vol.Optional(CONF_IGNORE_MIWI, default=IGNORE_MIWI): cv.boolean,
