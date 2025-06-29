@@ -1,7 +1,7 @@
 {
     "neviweb130JF": {
         "version": "3.0.7",
-        "local_location": "/custom_components/neviweb130JF/__init__.py",
+        "local_location": "/custom_components/neviweb130jf/__init__.py",
         "remote_location": "https://github.com/emondjf/sinope-130/tree/master/custom_components/__init__.py",
         "visit_repo": "https://github.com/emondjf/sinope-130",
         "changelog": "https://github.com/emondjf/sinope-130/wiki/Changelog",

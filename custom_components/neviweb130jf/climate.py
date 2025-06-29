@@ -2214,8 +2214,7 @@ class Neviweb130Thermostat(ClimateEntity):
         if self._is_low_voltage:
             value = "on"
             low = "voltage"
-            sec = self._cycle_length_output2_value
-            self._cycle_length_output2_status = "on"
+            sec = self._cycle_length_output2_status = "on"
         elif self._is_low_wifi:
             value = self._aux_cycle_length
             low = "wifi"
@@ -2792,6 +2791,15 @@ class Neviweb130G2Thermostat(Neviweb130Thermostat):
         return data
 
 
+class Neviweb130HcThermostat(Neviweb130Thermostat):
+    """Implementation of Neviweb TH1134ZB-HC thermostats."""
+    def __init__(self, data, device_info, name, sku, firmware):
+        super().__init__(data, device_info, name, sku, firmware)
+        self._is_hc = True
+        self._is_HC = True
+        # Add/override any HC-specific attributes or methods here as needed
+        
+
 class Neviweb130WifiThermostat(Neviweb130Thermostat):
     """Implementation of Neviweb TH1123WF, TH1124WF, TH1500WF thermostats."""
 
@@ -3021,61 +3029,9 @@ class Neviweb130WifiThermostat(Neviweb130Thermostat):
         return data
 
 
-class Neviweb130WifiLiteThermostat(Neviweb130Thermostat):
-    """Implementation of Neviweb TH1123WF-LITE, TH1124WF-LITE thermostats."""
-
+class Neviweb130WifiLiteThermostat(Neviweb130WifiThermostat):
+    """Implementation of Neviweb Wifi Lite thermostats (TH1133WF, TH1134WF, etc.)."""
     def __init__(self, data, device_info, name, sku, firmware):
-        """Initialize."""
-        self._name = name
-        self._sku = sku
-        self._firmware = firmware
-        self._client = data.neviweb130_client
-        self._id = device_info["id"]
-        self._device_model = device_info["signature"]["model"]
-        self._device_model_cfg = device_info["signature"]["modelCfg"]
-        self._hour_kwh = 0
-        self._today_kwh = 0
-        self._month_kwh = 0
-        self._current_hour_kwh = 0
-        self._current_today_kwh = 0
-        self._current_month_kwh = 0
-        self._drstatus_active = "off"
-        self._drstatus_optout = "off"
-        self._drstatus_setpoint = "off"
-        self._drstatus_abs = "off"
-        self._drstatus_rel = "off"
-        self._drsetpoint_status = "off"
-        self._drsetpoint_value = 0
-        self._cur_temp = None
-        self._cur_temp_before = None
-        self._target_temp = None
-        self._operation_mode = None
-        self._occupancy = None
-        self._wattage = 0
-        self._min_temp = 5
-        self._max_temp = 30
-        self._temperature_format = UnitOfTemperature.CELSIUS
-        self._time_format = "24h"
-        self._temp_display_value = None
-        self._display2 = None
-        self._heat_level = 0
-        self._keypad = None
-        self._backlight = None
-        self._cycle_length = 0
-        self._error_code = None
-        self._is_wifi = True
+        super().__init__(data, device_info, name, sku, firmware)
         self._is_wifi_lite = True
-        self._is_wifi_floor = False
-        self._is_low_wifi = False
-        self._is_low_voltage = False
-        self._is_double = False
-        self._is_floor = False
-        self._is_hc = False
-        self._is_HC = False
-        self._is_HP = False
-        self._energy_stat_time = time.time() - 1500
-        self._snooze = 0
-        self._activ = True
-        _LOGGER.debug("Setting up %s: %s", self._name, device_info)
-
-    # You can add or override methods as needed for WiFi Lite specifics.
+        # Add/override any Wifi Lite-specific attributes or methods here as needed
