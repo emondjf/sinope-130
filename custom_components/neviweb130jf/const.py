@@ -1,6 +1,6 @@
 """Constants for neviweb130 component."""
 
-DOMAIN = "neviweb130JF"
+DOMAIN = "neviweb130jf"
 CONF_NETWORK = "network"
 CONF_NETWORK2 = "network2"
 CONF_NETWORK3 = "network3"
